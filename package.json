@@ -1,0 +1,42 @@
+{
+  "name": "synology-srm-nodejs-api",
+  "version": "1.0.0",
+  "description": "Node.js wrapper for Synology SRM API",
+  "main": "lib/index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "mocha test/index.test.js",
+    "cover": "nyc --reporter=html mocha test/index.test.js",
+    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "keywords": [
+    "Synology",
+    "SRM",
+    "network",
+    "router"
+  ],
+  "author": "nioc <dev@nioc.eu>",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://github.com/nioc/synology-srm-nodejs-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nioc/synology-srm-nodejs-api.git"
+  },
+  "bugs": "https://github.com/nioc/synology-srm-nodejs-api/issues",
+  "devDependencies": {
+    "coveralls": "^3.1.1",
+    "eslint": "^8.25.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.0.1",
+    "eslint-plugin-security": "^1.5.0",
+    "mocha": "^10.0.0",
+    "nock": "^13.2.9",
+    "nyc": "^15.1.0",
+    "sinon": "^14.0.1"
+  }
+}
