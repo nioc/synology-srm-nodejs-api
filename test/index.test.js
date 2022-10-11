@@ -288,6 +288,77 @@ describe('get mesh nodes', () => {
   })
 })
 
+describe('get Smart WAN gateways', () => {
+  it('should return a array', async () => {
+    nock(baseUrl)
+      .post(pathEntry, 'api=SYNO.Core.Network.SmartWAN.Gateway&method=list&version=1&gatewaytype=%22ipv4%22')
+      .reply(200, { data: { list: [] }, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.getSmartWanGateway()
+    assert.deepEqual(result, [])
+  })
+})
+
+describe('get Smart WAN general configuration', () => {
+  it('should return configuration object', async () => {
+    nock(baseUrl)
+      .post(pathEntry, 'api=SYNO.Core.Network.SmartWAN.General&method=get&version=1')
+      .reply(200, { data: {}, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.getSmartWan()
+    assert.deepEqual(result, {})
+  })
+})
+
+describe('set Smart WAN general configuration', () => {
+  it('throw error if WAN config is not provided or invalid', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    await assert.rejects(async () => await client.setSmartWan(), { name: 'Error', message: 'Invalid WAN config' })
+    await assert.rejects(async () => await client.setSmartWan('dummy'), { name: 'Error', message: 'Invalid WAN config' })
+  })
+  it('throw error if dw_weight_ratio is not provided or invalid', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    await assert.rejects(async () => await client.setSmartWan({}), { name: 'Error', message: 'Invalid dw_weight_ratio' })
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 'dummy' }), { name: 'Error', message: 'Invalid dw_weight_ratio' })
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 1000 }), { name: 'Error', message: 'Invalid dw_weight_ratio' })
+  })
+  it('throw error if smartwan_ifname_1 or smartwan_ifname_2 are not provided or invalids', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 100 }), { name: 'Error', message: 'Invalid smartwan_ifname_1' })
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 100, smartwan_ifname_1: 'dummy' }), { name: 'Error', message: 'Invalid smartwan_ifname_1' })
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 100, smartwan_ifname_1: 'wan' }), { name: 'Error', message: 'Invalid smartwan_ifname_2' })
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 100, smartwan_ifname_1: 'wan', smartwan_ifname_2: 'dummy' }), { name: 'Error', message: 'Invalid smartwan_ifname_2' })
+  })
+  it('throw error if smartwan_mode is not provided or invalid', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 100, smartwan_ifname_1: 'wan', smartwan_ifname_2: 'lan1' }), { name: 'Error', message: 'Invalid smartwan_mode' })
+    await assert.rejects(async () => await client.setSmartWan({ dw_weight_ratio: 100, smartwan_ifname_1: 'wan', smartwan_ifname_2: 'lan1', smartwan_mode: 'dummy' }), { name: 'Error', message: 'Invalid smartwan_mode' })
+  })
+  it('should set config successfully and return it', async () => {
+    const config = { dw_weight_ratio: 100, smartwan_ifname_1: 'wan', smartwan_ifname_2: 'lan1', smartwan_mode: 'failover' }
+    nock(baseUrl)
+      .post(pathEntry, 'api=SYNO.Core.Network.SmartWAN.General&method=set&version=1&dw_weight_ratio=100&smartwan_ifname_1=wan&smartwan_ifname_2=lan1&smartwan_mode=failover')
+      .reply(200, { data: config, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.setSmartWan(config)
+    assert.deepEqual(result, config)
+  })
+  it('should switch gateway successfully and return udpated config', async () => {
+    const config = { dw_weight_ratio: 100, smartwan_ifname_1: 'wan', smartwan_ifname_2: 'lan1', smartwan_mode: 'failover' }
+    const config2 = { dw_weight_ratio: 100, smartwan_ifname_1: 'lan1', smartwan_ifname_2: 'wan', smartwan_mode: 'failover' }
+    nock(baseUrl)
+      // get config
+      .post(pathEntry, 'api=SYNO.Core.Network.SmartWAN.General&method=get&version=1')
+      .reply(200, { data: config, success: true })
+      // set config
+      .post(pathEntry, 'api=SYNO.Core.Network.SmartWAN.General&method=set&version=1&dw_weight_ratio=100&smartwan_ifname_1=lan1&smartwan_ifname_2=wan&smartwan_mode=failover')
+      .reply(200, { data: config2, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.switchSmartWan()
+    assert.deepEqual(result, config2)
+  })
+})
+
 describe('get policy rules', () => {
   it('should return a array', async () => {
     nock(baseUrl)

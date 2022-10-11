@@ -4,6 +4,8 @@
 [![Build Status](https://img.shields.io/github/workflow/status/nioc/synology-srm-nodejs-api/Commit%20check%20(lint%2C%20tests))](https://github.com/nioc/synology-srm-nodejs-api/actions/workflows/commit.yml)
 [![Coverage Status](https://coveralls.io/repos/github/nioc/synology-srm-nodejs-api/badge.svg?branch=master)](https://coveralls.io/github/nioc/synology-srm-nodejs-api?branch=master)
 [![GitHub release](https://img.shields.io/github/release/nioc/synology-srm-nodejs-api.svg)](https://github.com/nioc/synology-srm-nodejs-api/releases/latest)
+[![npms.io (final)](https://img.shields.io/npms-io/final-score/synology-srm-nodejs-api)](https://www.npmjs.com/package/synology-srm-nodejs-api)
+[![npm](https://img.shields.io/npm/dt/synology-srm-nodejs-api)](https://www.npmjs.com/package/synology-srm-nodejs-api)
 
 Node.js wrapper for Synology SRM API.
 
@@ -18,6 +20,8 @@ Node.js wrapper for Synology SRM API.
 -    get and update policy rules,
 -    get access control groups with devices, online status, etc... ,
 -    get Quality Of Service rules by devices,
+-    get Smart WAN configuration (gateways list with status, load balancing / failover),
+-    set Smart WAN configuration and switch WAN gateway,
 -    get wake-on-lan devices,
 -    add wake-on-lan on a device,
 -    wake-on-lan a device.
