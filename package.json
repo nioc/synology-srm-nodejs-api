@@ -1,6 +1,6 @@
 {
   "name": "synology-srm-nodejs-api",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Node.js wrapper for Synology SRM API",
   "main": "lib/index.js",
   "scripts": {
@@ -37,6 +37,6 @@
     "mocha": "^10.0.0",
     "nock": "^13.2.9",
     "nyc": "^15.1.0",
-    "sinon": "^14.0.1"
+    "sinon": "^17.0.1"
   }
 }
