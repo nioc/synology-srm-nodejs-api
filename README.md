@@ -1,7 +1,7 @@
 # synology-srm-nodejs-api
 
 [![license: AGPLv3](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Build Status](https://img.shields.io/github/workflow/status/nioc/synology-srm-nodejs-api/Commit%20check%20(lint%2C%20tests))](https://github.com/nioc/synology-srm-nodejs-api/actions/workflows/commit.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/nioc/synology-srm-nodejs-api/commit.yml)](https://github.com/nioc/synology-srm-nodejs-api/actions/workflows/commit.yml)
 [![Coverage Status](https://coveralls.io/repos/github/nioc/synology-srm-nodejs-api/badge.svg?branch=master)](https://coveralls.io/github/nioc/synology-srm-nodejs-api?branch=master)
 [![GitHub release](https://img.shields.io/github/release/nioc/synology-srm-nodejs-api.svg)](https://github.com/nioc/synology-srm-nodejs-api/releases/latest)
 [![npms.io (final)](https://img.shields.io/npms-io/final-score/synology-srm-nodejs-api)](https://www.npmjs.com/package/synology-srm-nodejs-api)
