@@ -217,14 +217,43 @@ describe('Logout', () => {
   })
 })
 
-describe('get WAN status', () => {
-  it('should return a boolean', async () => {
+describe('get WAN connection status', () => {
+  it('should return an object with ipv4 and ipv6 attributes', async () => {
     nock(baseUrl)
-      .post(pathEntry, 'method=get&version=1&api=SYNO.Mesh.Network.WANStatus')
-      .reply(200, { data: { wan_connected: true }, success: true })
+      .post(pathEntry, 'method=get&version=1&api=SYNO.Core.Network.Router.ConnectionStatus')
+      .reply(200, { data: { ipv4: { conn_status: 'normal', ifname: 'eth0', ip: '192.168.1.16', pppoe: false, vpn_profile: '' }, ipv6: { conn_status: 'not available', ifname: '', ip: '', pppoe: true } }, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.getWanConnectionStatus()
+    assert.strictEqual(result.ipv4.ip, '192.168.1.16')
+    assert.strictEqual(result.ipv4.conn_status, 'normal')
+    assert.strictEqual(result.ipv6.conn_status, 'not available')
+  })
+})
+
+describe('get WAN status', () => {
+  it('should return true if there is an IPv4 connection', async () => {
+    nock(baseUrl)
+      .post(pathEntry, 'method=get&version=1&api=SYNO.Core.Network.Router.ConnectionStatus')
+      .reply(200, { data: { ipv4: { conn_status: 'normal', ifname: 'eth0', ip: '192.168.1.16', pppoe: false, vpn_profile: '' }, ipv6: { conn_status: 'not available', ifname: '', ip: '', pppoe: true } }, success: true })
     const client = new SrmClient(baseUrl, sid)
     const result = await client.getWanStatus()
     assert.strictEqual(result, true)
+  })
+  it('should return true if there is an IPv6 connection', async () => {
+    nock(baseUrl)
+      .post(pathEntry, 'method=get&version=1&api=SYNO.Core.Network.Router.ConnectionStatus')
+      .reply(200, { data: { ipv4: { conn_status: 'not available', ifname: '', ip: '', pppoe: true }, ipv6: { conn_status: 'normal', ifname: 'eth0', ip: '2001:0db8:0000:85a3:0000:0000:ac1f:8001', pppoe: false, vpn_profile: '' } }, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.getWanStatus()
+    assert.strictEqual(result, true)
+  })
+  it('should return false if there is no connection', async () => {
+    nock(baseUrl)
+      .post(pathEntry, 'method=get&version=1&api=SYNO.Core.Network.Router.ConnectionStatus')
+      .reply(200, { data: { ipv4: { conn_status: 'not available', ifname: '', ip: '', pppoe: true }, ipv6: { conn_status: 'not available', ifname: '', ip: '', pppoe: true } }, success: true })
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.getWanStatus()
+    assert.strictEqual(result, false)
   })
 })
 

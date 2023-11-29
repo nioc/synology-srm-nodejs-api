@@ -12,6 +12,7 @@ Node.js wrapper for Synology SRM API.
 ## Key features
 -    authentication
 -    get WAN status,
+-    get WAN connection (ip, status, interface name),
 -    get network utilization,
 -    get devices with status, IP, etc... ,
 -    get wifi devices with link quality, signal strength, max rate, band used, etc... ,
