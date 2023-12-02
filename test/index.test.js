@@ -287,7 +287,7 @@ describe('get network utilization', () => {
 describe('get devices', () => {
   it('should return a array with default info', async () => {
     nock(baseUrl)
-      .post(pathEntry, 'method=get&version=4&conntype=all&api=SYNO.Core.Network.NSM.Device')
+      .post(pathEntry, 'method=get&version=5&conntype=all&api=SYNO.Core.Network.NSM.Device')
       .reply(200, { data: { devices: [] }, success: true })
     const client = new SrmClient(baseUrl, sid)
     const result = await client.getDevices()
@@ -309,7 +309,7 @@ describe('get wifi devices', () => {
 describe('get mesh nodes', () => {
   it('should return a array', async () => {
     nock(baseUrl)
-      .post(pathEntry, 'method=get&version=3&api=SYNO.Mesh.Node.List')
+      .post(pathEntry, 'method=get&version=4&api=SYNO.Mesh.Node.List')
       .reply(200, { data: { nodes: [] }, success: true })
     const client = new SrmClient(baseUrl, sid)
     const result = await client.getMeshNodes()
@@ -475,7 +475,7 @@ describe('get access control groups', () => {
   })
   it('should return a array of groups with online status if requested', async () => {
     nock(baseUrl)
-      .post(pathEntry, 'method=get&version=4&conntype=all&api=SYNO.Core.Network.NSM.Device&info=%22basic%22')
+      .post(pathEntry, 'method=get&version=5&conntype=all&api=SYNO.Core.Network.NSM.Device&info=basic')
       .reply(200, { data: { devices }, success: true })
     const client = new SrmClient(baseUrl, sid)
     const result = await client.getAccessControlGroups(true)
@@ -487,7 +487,7 @@ describe('get access control groups', () => {
   })
   it('should return a array of groups without online status if requested but failed and log error', async () => {
     nock(baseUrl)
-      .post(pathEntry, 'method=get&version=4&conntype=all&api=SYNO.Core.Network.NSM.Device&info=%22basic%22')
+      .post(pathEntry, 'method=get&version=5&conntype=all&api=SYNO.Core.Network.NSM.Device&info=basic')
       .reply(200, { error: { code: 101 }, success: false })
     sinon.replace(console, 'log', sinon.fake())
     const client = new SrmClient(baseUrl, sid)
