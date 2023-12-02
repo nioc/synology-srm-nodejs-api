@@ -35,6 +35,12 @@ npm install synology-srm-nodejs-api
 
 ## Usage
 
+### SRM version
+
+This library has been checked with SRM version `1.3.1-9346 Update 8`.
+
+Please note that future SRM updates may break its functionality, in which case please create a [bug report](https://github.com/nioc/synology-srm-nodejs-api/issues/new).
+
 ### Basic example
 ```js
 const { SrmClient } = require('synology-srm-nodejs-api')
@@ -43,35 +49,118 @@ const { SrmClient } = require('synology-srm-nodejs-api')
 const baseUrl = 'https://10.0.0.1:8001'
 const login = 'admin-user'
 const password = 'admin-password'
+let sid = null
+const outputInline = false
+
+function output (label, data) {
+  if (outputInline) {
+    console.log(`${label}: ${JSON.stringify(data)}`)
+    return
+  }
+  console.log(label + ':')
+  console.dir(data, { depth: null, colors: true })
+}
 
 async function main () {
   try {
     // create client
-    const client = new SrmClient(baseUrl, null, { timeout: 5000 })
+    const client = new SrmClient(baseUrl, sid, { timeout: 5000 })
 
     // authenticate
-    const sid = await client.authenticate(login, password)
-    console.log(`Session Id for further usage: ${sid}`)
+    if (sid === null) {
+      sid = await client.authenticate(login, password)
+      output('Session Id for further usage', sid)
+    }
 
     // get WAN status
     const wanStatus = await client.getWanStatus()
-    console.log(`WAN is connected: ${wanStatus}`)
+    output('WAN is connected', wanStatus)
+
+    // get WAN connection
+    const wanConnection = await client.getWanConnectionStatus()
+    output('WAN connection', wanConnection)
+
+    // get devices traffic
+    const traffic = await client.getTraffic('live')
+    output('Devices traffic', traffic)
+
+    // get utilization by network
+    const networkUtilization = await client.getNetworkUtilization()
+    output('Utilization by network', networkUtilization)
 
     // get known devices
     const devices = await client.getDevices()
-    console.log(`Known devices: ${JSON.stringify(devices)}`)
+    output('Devices', devices)
 
     // get control groups
-    const groups = await client.getAccessControlGroups(true)
-    console.log(`Control groups: ${JSON.stringify(groups)}`)
+    const groups = await client.getAccessControlGroups(false)
+    output('Control groups', groups)
+
+    client.computeAccessControlGroupStatus(groups, devices)
+    output('Control groups with online status and onlines devices count', groups)
+
+    // get policy rules
+    const rules = await client.getPolicyRoutes()
+    output('Policy rules', rules)
 
     // update policy rules
-    const rules = await client.getPolicyRoutes()
-    console.log(`${JSON.stringify(rules)}`)
-    // change something before set
+    /* Commented in this sample code because it updates the configuration
+    // change something in `rules` before request
     await client.setPolicyRoutes(rules)
+    */
+
+    // get Wi-Fi devices
+    const wifiDevices = await client.getWifiDevices()
+    output('Wi-Fi devices', wifiDevices)
+
+    // get mesh nodes
+    const meshNodes = await client.getMeshNodes()
+    output('Mesh nodes', meshNodes)
+
+    // get smart WAN gateways
+    const smartWanGateways = await client.getSmartWanGateway()
+    output('Smart WAN gateways', smartWanGateways)
+
+    // get smart WAN configuration
+    const smartWanConfiguration = await client.getSmartWan()
+    output('Smart WAN configuration', smartWanConfiguration)
+
+    // update smart WAN configuration
+    /* Commented in this sample code because it updates the configuration
+    // change something in `smartWanConfiguration` before request
+    const updatedSmartWanConfiguration = await client.setSmartWan(smartWanConfiguration)
+    output('Updated smart WAN gateways', updatedSmartWanConfiguration)
+    */
+
+    // switch smart WAN interfaces
+    /* Commented in this sample code because it updates the configuration
+    const switchedSmartWanConfiguration = await client.switchSmartWan()
+    output('Updated smart WAN gateways (switch interfaces)', switchedSmartWanConfiguration)
+    */
+
+    // get wake on lan devices
+    const wolDevices = await client.getWakeOnLanDevices()
+    output('Wake on lan devices', wolDevices)
+
+    // add a wake on lan device
+    /* Commented in this sample code because it updates the configuration
+    const mac = '00:00:00:00:00:00'
+    const host = 'my-device'
+    const wolDevice = await client.addWakeOnLan(mac, host)
+    output('Added wake on lan device', wolDevice)
+    */
+
+    // wake on lan a device
+    /* Commented in this sample code because it updates the configuration
+    const mac = '00:00:00:00:00:00'
+    await client.wakeOnLan(mac)
+    */
+
+    // get Quality Of Service rules by devices
+    const qosRules = await client.getQos()
+    output('Quality Of Service rules by devices', qosRules)
   } catch (error) {
-    console.log('error (main)', error.message)
+    output('Error during main process', error)
   }
 }
 
