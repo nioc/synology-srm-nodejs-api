@@ -298,7 +298,7 @@ describe('get devices', () => {
 describe('get wifi devices', () => {
   it('should return a array', async () => {
     nock(baseUrl)
-      .post(pathEntry, 'method=get&version=1&api=SYNO.Mesh.Network.WifiDevice')
+      .post(pathEntry, 'method=get&version=5&conntype=wireless&api=SYNO.Core.Network.NSM.Device&info=online')
       .reply(200, { data: { devices: [] }, success: true })
     const client = new SrmClient(baseUrl, sid)
     const result = await client.getWifiDevices()
