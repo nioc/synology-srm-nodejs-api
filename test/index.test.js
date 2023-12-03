@@ -16,6 +16,7 @@ const password = 'mypassword'
 const sid = '0123456789abcdef'
 const devices = [{ dev_type: 'cam', hostname: 'Camera', ip6_addr: '', ip_addr: '10.0.0.2', is_online: false, is_wireless: true, mac: 'aa:aa:aa:aa:aa:01', mesh_node_id: -1 }, { band: '2.4G', current_rate: 65, dev_type: 'air_conditioner', hostname: 'AC', ip6_addr: '', ip_addr: '10.0.0.3', is_guest: false, is_manual_dev_type: true, is_manual_hostname: true, is_online: true, is_wireless: true, mac: 'aa:aa:aa:aa:aa:02', max_rate: 86, mesh_node_id: 0, rate_quality: 'high', signalstrength: 49, transferRXRate: 0, transferTXRate: 0 }, { dev_type: 'default', hostname: 'rpi4', ip6_addr: '', ip_addr: '10.0.0.4', is_manual_dev_type: true, is_manual_hostname: true, is_online: true, is_wireless: false, mac: 'aa:aa:aa:aa:aa:03', mesh_node_id: -1 }, { dev_type: 'nb', hostname: 'Laptop', ip6_addr: '', ip_addr: '10.0.0.5', is_online: false, is_wireless: true, mac: 'aa:aa:aa:aa:aa:04', mesh_node_id: -1 }]
 const groups = [{ config_group_id: 2, device_count: 2, devices: ['aa:aa:aa:aa:aa:01', 'aa:aa:aa:aa:aa:02'], name: 'Admin', pause: false, profile_id: 2, timespent: { has_quota: false, quota: 0, total_spent: { normal: 735, reward: 0 } } }, { config_group_id: 3, device_count: 3, devices: ['aa:aa:aa:aa:aa:03', 'aa:aa:aa:aa:aa:04'], name: 'Guest', pause: false, profile_id: 3, timespent: { has_quota: false, quota: 0, total_spent: { normal: 735, reward: 0 } } }]
+const profiles = [{ id: 0, radio_list: [{ ssid: 'MyPrimary', enable: true, radio_type: 'SmartConnect' }] }, { id: 1, radio_list: [{ ssid: 'MyGuest', enable: false, radio_type: 'SmartConnect' }] }]
 
 before(() => {
   nock.disableNetConnect()
@@ -495,5 +496,54 @@ describe('get access control groups', () => {
     assert.equal(result.length, groups.length)
     assert(console.log.calledWith('Error during device recuperation: Invalid parameters'))
     sinon.restore()
+  })
+})
+
+describe('get Wi-Fi settings', () => {
+  beforeEach(() => {
+    nock(baseUrl)
+      .post(pathEntry, 'api=SYNO.Wifi.Network.Setting&method=get&version=1')
+      .reply(200, { data: { profiles }, success: true })
+  })
+  it('should return a array of Wi-Fi profiles', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.getWifiSettings()
+    assert.deepEqual(result, profiles)
+  })
+})
+
+describe('set Wi-Fi settings', () => {
+  beforeEach(() => {
+    nock(baseUrl)
+      .post(pathEntry, 'api=SYNO.Wifi.Network.Setting&method=set&version=1&profiles=%5B%7B%22id%22%3A0%2C%22radio_list%22%3A%5B%7B%22ssid%22%3A%22MyPrimary%22%2C%22enable%22%3Atrue%2C%22radio_type%22%3A%22SmartConnect%22%7D%5D%7D%2C%7B%22id%22%3A1%2C%22radio_list%22%3A%5B%7B%22ssid%22%3A%22MyGuest%22%2C%22enable%22%3Afalse%2C%22radio_type%22%3A%22SmartConnect%22%7D%5D%7D%5D')
+      .reply(200, { success: true })
+  })
+  it('should successs silently', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.setWifiSettings(profiles)
+    assert.deepEqual(result, undefined)
+  })
+})
+
+describe('switch Wi-Fi radio', () => {
+  beforeEach(() => {
+    nock(baseUrl)
+      .post(pathEntry, 'api=SYNO.Wifi.Network.Setting&method=get&version=1')
+      .reply(200, { data: { profiles }, success: true })
+      .post(pathEntry, 'api=SYNO.Wifi.Network.Setting&method=set&version=1&profiles=%5B%7B%22id%22%3A1%2C%22radio_list%22%3A%5B%7B%22ssid%22%3A%22MyGuest%22%2C%22enable%22%3Atrue%2C%22radio_type%22%3A%22SmartConnect%22%7D%5D%7D%5D')
+      .reply(200, { success: true })
+  })
+  it('throw error if SSID is not provided', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    await assert.rejects(async () => await client.switchWifiRadio(), { name: 'Error', message: 'You must provide the network SSID' })
+  })
+  it('throw error if SSID provided was not found', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    await assert.rejects(async () => await client.switchWifiRadio('DummySsid'), { name: 'Error', message: 'The SSID provided was not found' })
+  })
+  it('should successs silently with a known SSID', async () => {
+    const client = new SrmClient(baseUrl, sid)
+    const result = await client.switchWifiRadio('MyGuest')
+    assert.deepEqual(result, undefined)
   })
 })

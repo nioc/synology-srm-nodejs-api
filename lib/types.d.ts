@@ -310,3 +310,73 @@ export type AccessControlGroup = {
   profile_id: number,
   timespent: AccessControlGroupTimespent
 }
+
+type WifiSettingsRadio = {
+  advance: {
+    ampdu: boolean,
+    ap_enable_11r: boolean,
+    ap_isolation: boolean,
+    ap_mcast_translating: boolean,
+    ap_mumimo: boolean,
+    country_abbrev_override_enable: boolean,
+    dtim: number,
+    enable_extended_nss: boolean,
+    enable_ofdma: boolean,
+    key_rotation: number,
+    /**
+     * 'capable' or 'disabled'
+     */
+    pmf_mode: string,
+    sc_disable_legacy_steering: boolean,
+    uapsd_enable: boolean
+  },
+  enable: boolean,
+  enable_client_isolation: boolean,
+  hide_ssid: boolean,
+  mac_filter: {
+    profile_id: number
+  },
+  max_connection: number,
+  password_rotate?: {
+    /**
+     * Date in format YYYY-MM-DD
+     */
+    date: string,
+    enable: boolean,
+    enable_notification: boolean,
+    hour: number,
+    mail_list: [],
+    minute: number,
+    mode: string,
+    schedule: string,
+    strength: string
+  },
+  /**
+   * 'SmartConnect', '2.4G', '5G-1', or '5G-2'
+   */
+  radio_type: string,
+  schedule: {
+    enable: boolean,
+    mode: string,
+    schedule_value: string,
+    valid_for: number
+  },
+  security: {
+    ip: string,
+    password: string,
+    port: number,
+    security_level: string
+  },
+  ssid: string
+}
+
+export type WifiSettings = {
+  id: number,
+  enable_smart_connect: boolean,
+  name: string,
+  /**
+   * 'primary' or 'guest'
+   */
+  network_type: string,
+  radio_list: WifiSettingsRadio[]
+}

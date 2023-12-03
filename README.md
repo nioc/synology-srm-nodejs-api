@@ -10,7 +10,7 @@
 Node.js wrapper for Synology SRM API.
 
 ## Key features
--    authentication
+-    authentication,
 -    get WAN status,
 -    get WAN connection (ip, status, interface name),
 -    get network utilization,
@@ -23,6 +23,8 @@ Node.js wrapper for Synology SRM API.
 -    get Quality Of Service rules by devices,
 -    get Smart WAN configuration (gateways list with status, load balancing / failover),
 -    set Smart WAN configuration and switch WAN gateway,
+-    get and set Wi-Fi configuration,
+-    enable or disable a Wi-Fi radio by its SSID,
 -    get wake-on-lan devices,
 -    add wake-on-lan on a device,
 -    wake-on-lan a device.
@@ -34,6 +36,11 @@ npm install synology-srm-nodejs-api
 ```
 
 ## Usage
+
+### Disclaimer
+
+This library lets you **modify SRM's configuration**. Its use is entirely at **your own risk**.
+We cannot be held responsible for any damage resulting from misuse or bugs.
 
 ### SRM version
 
@@ -159,6 +166,15 @@ async function main () {
     // get Quality Of Service rules by devices
     const qosRules = await client.getQos()
     output('Quality Of Service rules by devices', qosRules)
+
+    // get Wi-Fi settings
+    const wifiSettings = await client.getWifiSettings()
+    output('Wi-Fi settings', wifiSettings)
+
+    // switch Wi-Fi radio for SSID `Guests-Network`
+    /* Commented in this sample code because it updates the configuration
+    await client.switchWifiRadio('Guests-Network')
+    */
   } catch (error) {
     output('Error during main process', error)
   }
