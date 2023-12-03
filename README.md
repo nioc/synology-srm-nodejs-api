@@ -89,6 +89,13 @@ async function main () {
 
     // get devices traffic
     const traffic = await client.getTraffic('live')
+    // [optionnal] add protocol label on each device/recording
+    traffic
+      .forEach(device => device.recs
+        .forEach(record => record.protocollist
+          .forEach(proto => {
+            proto.label = client.getProtocolLabel(proto.protocol)
+          })))
     output('Devices traffic', traffic)
 
     // get utilization by network
