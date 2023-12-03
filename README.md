@@ -7,7 +7,7 @@
 [![npms.io (final)](https://img.shields.io/npms-io/final-score/synology-srm-nodejs-api)](https://www.npmjs.com/package/synology-srm-nodejs-api)
 [![npm](https://img.shields.io/npm/dt/synology-srm-nodejs-api)](https://www.npmjs.com/package/synology-srm-nodejs-api)
 
-Node.js wrapper for Synology SRM API.
+Unofficial dependency-free Node.js wrapper for Synology SRM API.
 
 ## Key features
 -    authentication,
